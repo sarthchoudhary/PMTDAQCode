@@ -1,3 +1,4 @@
+// This code uses ROOT 5
 #include <stdlib.h>
 #include <fstream>
 #include <vector>
@@ -15,16 +16,18 @@
 #include "TMath.h"
 
 // using namespace std;
-
-int main(int argc, char **argv) 
+int main(int argc, char** argv) 
 {
-	TFile* in_file = TFile::Open("/home/sarthak/Documents/Out-R6_Module_0_3.root");
-	TH1D* in_hist = (TH1D*)in_file->Get("Stackwaveform_CH1");
-	TF1* fit_function = new TF1("fit_function", "[0]*exp([1]*(x+[2]))", 0.45+0.81, 2.0+0.81);
+	// TFile* in_file = TFile::Open("/home/sarthak/Documents/Out-R6_Module_0_3.root");
+	TFile* in_file = TFile::Open(argv[1]);
+
+	TH1D* in_hist = (TH1D*)in_file->Get("Stackwaveform_CH1"); // Histogram name needs to change
+
+	// TF1* fit_function = new TF1("fit_function", "[0]*exp([1]*(x+[2]))", atof(argv[2]), atof(argv[3]));
+	TF1* fit_function = new TF1("fit_function", "([0]/[1])*exp(-(x-[2])/[1])", atof(argv[2]), atof(argv[3]));
+	fit_function->SetParameters(1000, 1.0, 0.5);
 	TFitResultPtr fit_result = in_hist->Fit("fit_function", "SR");
-	// Double_t fit_function->GetChi2();
-	Double_t tau3 = -fit_function->GetParameter(1);
-	cout <<  "Triplet lifetime in us: " << '\n' <<
-	1/tau3 << endl;
+	// Double_t fit_function->GetChisquare();
+	cout <<  "Chi2: " << '\n' << fit_function->GetChisquare() << endl;
 	return 0;
 }

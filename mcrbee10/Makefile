@@ -37,7 +37,7 @@ OBJS_STAND = processor_code.o
 #OBJS_CAEN = processor_code_caen.o 
 
 
-all: process average_sig raw_waveform_output  
+all: process average_sig raw_waveform_output  triplet_est # added triplet_est
 
 
 
@@ -74,6 +74,14 @@ average_sig:	$(OBJS) $(OBJS_100) $(OBJS_STAND) average_sig.o
 average_sig.o:	average_sig.cxx
 	$(CC) -c $(CFLAGS) $(INCNR) $(ROOTCFLAGS) $< -o $@
 
+# triplet estimation
+triplet_est:	$(OBJS) $(OBJS_100) $(OBJS_STAND) triplet_est.o
+	$(CC) triplet_est.o $(OBJS) $(OBJS_100) $(OBJS_STAND)  $(LIBWARP) -lz $(ROOTLIBS) $(LIBNR) $(SQLLIBS) -o $@
+
+triplet_est.o:	triplet_est.cxx
+	$(CC) -c $(CFLAGS) $(INCNR) $(ROOTCFLAGS) $< -o $@
+# ends here
+
 raw_waveform_output:	$(OBJS) $(OBJS_100) $(OBJS_STAND) raw_waveform_output.o
 	$(CC) raw_waveform_output.o $(OBJS) $(OBJS_100) $(OBJS_STAND)  $(LIBWARP) -lz $(ROOTLIBS) $(LIBNR) $(SQLLIBS) -o $@
 
@@ -81,7 +89,7 @@ raw_waveform_output.o:	raw_waveform_output.cxx
 	$(CC) -c $(CFLAGS) $(INCNR) $(ROOTCFLAGS) $< -o $@
 
 clean:
-	rm -f *.o gui process average_sig  .depend
+	rm -f *.o gui process average_sig triplet_est  .depend
 
 
 dep depend:
